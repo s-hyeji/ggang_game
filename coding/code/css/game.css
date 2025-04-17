@@ -1,1 +1,96 @@
-/* 코드를 작성하세요 */
+.game_app {
+ position: relative;
+ max-width: 1280px;
+ min-height: 720px;
+ height: 100vh;
+ overflow: hidden;
+}
+
+.game_app .sky {
+ position: absolute;
+ left: 0;
+ bottom: 0;
+ width: 100%;
+ height: 100%;
+ background: url(../../../lib/images/bg_top.png)top/auto 100% repeat-x;
+ z-index: 1;
+
+}
+
+.game_app .game {
+ position: absolute;
+ left: 0;
+ bottom: 0;
+ width: 70000px;
+ height: 100%;
+ background: url(../../../lib/images/bg_bottom.png)bottom/ auto 100% repeat-x;
+ z-index: 10;
+ will-change: transform;
+}
+
+/* 기본 히어로 */
+@keyframes hero_idle {
+ 100% {
+  background-position-x: right;
+ }
+}
+
+.hero_box {
+ position: fixed;
+ left: 0;
+ bottom: 0;
+ width: 150px;
+ height: 182px;
+ will-change: transform;
+}
+
+.hero_box .hero {
+ height: 100%;
+ aspect-ratio: 377/458;
+ background-position: 0px 0px;
+ background-size: auto 100%;
+ background-repeat: no-repeat;
+ background-image: url(../../../lib/images/ninja_idle.png);
+ animation: hero_idle 0.7s infinite steps(9);
+}
+
+.hero_box .hero.flip {
+ transform: rotateY(180deg);
+}
+
+/* 뛰는 */
+@keyframes hero_run {
+ 100% {
+  background-position-x: right;
+ }
+}
+
+.hero_box .hero.run,
+.hero_box .hero.run.attack {
+ background-image: url(../../../lib/images/ninja_run.png);
+ animation: hero_run 0.7s infinite steps(9);
+}
+
+/* 공격 */
+@keyframes hero_attack {
+ 100% {
+  background-position-x: right;
+ }
+}
+
+.hero_box .hero.attack {
+ background-image: url(../../../lib/images/ninja_attack.png);
+ animation: hero_attack 0.7s 1 steps(9);
+}
+
+.hero_bullet {
+ position: absolute;
+ left: 0;
+ bottom: 0;
+ width: auto;
+ height: 16px;
+ aspect-ratio: 160/32;
+ z-index: 10;
+ background: url(../../../lib/images/hero_bullet.png)center/contain no-repeat;
+ will-change: transform;
+}
