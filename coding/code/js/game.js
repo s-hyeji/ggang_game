@@ -71,7 +71,7 @@ let hero;
 const init = () => {
  hero = new Hero('.hero');
  allMonsterComProp.arr[0] = new Monster(700, 7777);
- // allMonsterComProp.arr[1] = new Monster(1500, 5555);
+ allMonsterComProp.arr[1] = new Monster(1500, 5555);
  windowEvent();
  loadImg();
  renderGame();

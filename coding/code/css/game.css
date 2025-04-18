@@ -29,6 +29,48 @@
  will-change: transform;
 }
 
+/* info */
+.game_info {
+ position: fixed;
+ left: 0;
+ top: 0;
+ width: 100%;
+ height: 150px;
+ z-index: 10;
+}
+
+.game_info .hero_state {
+ width: 300px;
+ height: 100%;
+ padding: 10px;
+}
+
+.game_info .hero_state .hero_img {
+ float: left;
+ width: 20%;
+}
+
+.game_info .hero_state .state_box {
+ float: left;
+ width: 80%;
+ height: 100%;
+ padding-top: 10px;
+}
+
+.game_info .hero_state .state_box .hp {
+ width: 100%;
+ height: 10px;
+ border: 1px solid #000;
+}
+
+.game_info .hero_state .state_box .hp span {
+ display: block;
+ width: 100%;
+ height: 100%;
+ background-color: #e30d0d;
+ transition: width .3s linear;
+}
+
 /* 기본 히어로 */
 @keyframes hero_idle {
  100% {
@@ -94,6 +136,35 @@
  z-index: 10;
  background: url(../../../lib/images/hero_bullet.png)center/contain no-repeat;
  will-change: transform;
+}
+
+/* 충돌 */
+@keyframes hero_crash {
+ 0% {
+  background-position-x: 0px;
+ }
+
+ 100% {
+  background-position-x: -259px;
+ }
+}
+
+.hero_box .hero.crash {
+ background-image: url(../../../lib/images/ninja_crash.png);
+ animation: hero_crash .4s 1 steps(2);
+}
+
+/* 다이 */
+@keyframes hero_dead {
+ 100% {
+  background-position-x: right;
+ }
+}
+
+.hero_box .hero.dead {
+ background-image: url(../../../lib/images/ninja_dead.png);
+ animation: none;
+ transform: rotate(90deg) translateX(53px);
 }
 
 /* 몬스터 */
