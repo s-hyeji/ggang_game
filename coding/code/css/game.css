@@ -31,7 +31,7 @@
 
 /* info */
 .game_info {
- position: fixed;
+ position: absolute;
  left: 0;
  top: 0;
  width: 100%;
@@ -69,6 +69,40 @@
  height: 100%;
  background-color: #e30d0d;
  transition: width .3s linear;
+}
+
+@keyframes stageStart {
+
+ 0%,
+ 80% {
+  opacity: 1;
+ }
+
+ 100% {
+  opacity: 0;
+ }
+}
+
+.stage_box {
+ position: absolute;
+ left: 50%;
+ top: 50%;
+ color: #fff;
+ font-size: 90px;
+ white-space: nowrap;
+ transform: translate(-50%, -50%);
+ user-select: none;
+ z-index: 190;
+ animation: stageStart 1.5s forwards;
+ animation-fill-mode: both;
+}
+
+.game_info .score_box {
+ position: absolute;
+ top: 10px;
+ right: 10px;
+ color: #fff;
+ font-size: 20px;
 }
 
 /* 기본 히어로 */
@@ -194,6 +228,22 @@
  animation: monster_run 1s infinite steps(7);
 }
 
+.monster_box.yellow_mon .monster,
+.monster_box.yellow_mon_boss .monster {
+ background-image: url(../../../lib/images/monster/monster_yellow_run.png);
+}
+
+.monster_box.pink_mon .monster,
+.monster_box.pink_mon_boss .monster {
+ background-image: url(../../../lib/images/monster/monster_pink_run.png);
+}
+
+.monster_box.green_mon_boss,
+.monster_box.yellow_mon_boss,
+.monster_box.pink_mon_boss {
+ height: 472px;
+}
+
 .monster_box .hp {
  position: absolute;
  left: 0;
@@ -215,4 +265,62 @@
 .monster_box.remove {
  opacity: 0;
  transition: opacity .2s;
+}
+
+/* 텍스트 데미지 */
+.text_damage {
+ position: absolute;
+ left: 0;
+ bottom: 0;
+ font-family: 'roboto';
+ font-size: 110px;
+ background: linear-gradient(to bottom, rgba(196, 41, 30, 1) 0%, rgba(230, 89, 191, 1) 100%);
+ -webkit-text-stroke: 5px rgba(255, 255, 255, .7);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ z-index: 200;
+ animation: textDamage .5s ease-out;
+ animation-fill-mode: both;
+}
+
+@keyframes textDamage {
+ 0% {
+  opacity: 0;
+  bottom: 0;
+ }
+
+ 70% {
+  opacity: 1;
+  bottom: 50px;
+ }
+
+ 100% {
+  opacity: 0;
+  bottom: 90px;
+ }
+}
+
+/* 게임오버 */
+.game_over.on {
+ display: block;
+}
+
+.game_over {
+ display: none;
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ z-index: 200;
+ background-color: rgb(0, 0, 0, .5);
+}
+
+.game_over p {
+ display: flex;
+ height: 100%;
+ align-items: center;
+ justify-content: center;
+ color: #fff;
+ font-size: 150px;
 }
