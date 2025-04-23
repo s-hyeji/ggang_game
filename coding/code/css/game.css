@@ -1,6 +1,6 @@
 .game_app {
  position: relative;
- max-width: 1280px;
+ max-width: 100%;
  min-height: 720px;
  height: 100vh;
  overflow: hidden;
@@ -46,8 +46,17 @@
 }
 
 .game_info .hero_state .hero_img {
+ position: relative;
  float: left;
  width: 20%;
+}
+
+.game_info .hero_state .hero_img .level_box {
+ position: absolute;
+ left: 4px;
+ top: 100%;
+ font: 14px;
+ color: #fff;
 }
 
 .game_info .hero_state .state_box {
@@ -57,18 +66,25 @@
  padding-top: 10px;
 }
 
-.game_info .hero_state .state_box .hp {
+.game_info .hero_state .state_box .hp,
+.game_info .hero_state .state_box .exp {
  width: 100%;
  height: 10px;
  border: 1px solid #000;
+ margin-top: 5px;
 }
 
-.game_info .hero_state .state_box .hp span {
+.game_info .hero_state .state_box div span {
  display: block;
  width: 100%;
  height: 100%;
  background-color: #e30d0d;
  transition: width .3s linear;
+}
+
+.game_info .hero_state .state_box .exp span {
+ width: 0%;
+ background-color: #ffd770;
 }
 
 @keyframes stageStart {
@@ -105,6 +121,37 @@
  font-size: 20px;
 }
 
+@keyframes hero_levelup {
+ 0% {
+  opacity: 0;
+ }
+
+ 20%,
+ 80% {
+  opacity: 1;
+ }
+
+ 100% {
+  opacity: 0;
+ }
+}
+
+.hero_box .level_up {
+ position: absolute;
+ left: 50%;
+ bottom: 110%;
+ width: 200px;
+ height: 42px;
+ background: url(../../../lib/images/levelup.png)center/cover no-repeat;
+ transform: translateX(-50%);
+ opacity: 0;
+}
+
+.hero_box .level_up.active {
+ animation: hero_levelup 1s linear;
+ animation-fill-mode: both;
+}
+
 /* 기본 히어로 */
 @keyframes hero_idle {
  100% {
@@ -119,6 +166,7 @@
  width: 150px;
  height: 182px;
  will-change: transform;
+ z-index: 100;
 }
 
 .hero_box .hero {
@@ -146,6 +194,18 @@
 .hero_box .hero.run.attack {
  background-image: url(../../../lib/images/ninja_run.png);
  animation: hero_run 0.7s infinite steps(9);
+}
+
+/* 슬라이드드 */
+@keyframes hero_slide {
+ 100% {
+  background-position-x: right;
+ }
+}
+
+.hero_box .hero.slide {
+ background-image: url(../../../lib/images/ninja_slide.png);
+ animation: hero_slide .4s 1 steps(9);
 }
 
 /* 공격 */
@@ -189,17 +249,13 @@
 }
 
 /* 다이 */
-@keyframes hero_dead {
- 100% {
-  background-position-x: right;
- }
-}
 
 .hero_box .hero.dead {
  background-image: url(../../../lib/images/ninja_dead.png);
  animation: none;
  transform: rotate(90deg) translateX(53px);
 }
+
 
 /* 몬스터 */
 @keyframes monster_run {
@@ -221,7 +277,7 @@
 
 .monster_box .monster {
  height: 100%;
- background-position: 0 0;
+ background-position: 0 22px;
  background-size: auto 100%;
  background-repeat: no-repeat;
  background-image: url(../../../lib/images/monster/monster_green_run.png);
@@ -265,6 +321,17 @@
 .monster_box.remove {
  opacity: 0;
  transition: opacity .2s;
+}
+
+/* 좀비왕 */
+.monster_box.zombie_king {
+ width: 430px;
+ height: 519px;
+}
+
+.monster_box.zombie_king .monster {
+ background-image: url(../../../lib/images/monster/zombie_run.png);
+ animation: monster_run 1s infinite steps(9);
 }
 
 /* 텍스트 데미지 */
@@ -323,4 +390,104 @@
  justify-content: center;
  color: #fff;
  font-size: 150px;
+}
+
+/* npc */
+.npc_box {
+ position: absolute;
+ left: 400px;
+ bottom: -4px;
+ width: auto;
+ height: 182px;
+ aspect-ratio: 149.8/182;
+ z-index: 90;
+}
+
+@keyframes npc {
+ 100% {
+  background-position-x: right;
+ }
+}
+
+.npc_box .npc {
+ height: 100%;
+ background: url(../../../lib/images/robot_idle.png) 0 bottom / auto 100% no-repeat;
+ animation: npc 1s infinite steps(9);
+}
+
+.npc_box .talk_box {
+ position: absolute;
+ left: 5px;
+ bottom: 105%;
+ width: 150px;
+ color: #222;
+ background-color: #f1f1f1;
+ border: 2px solid #555;
+ border-radius: 20px;
+}
+
+.npc_box .talk_box p {
+ padding: 10px;
+}
+
+.npc_box .talk_box p span {
+ display: block;
+ color: #bf0000;
+ text-align: right;
+ font-size: 14px;
+ margin-top: 10px;
+}
+
+.quest_modal {
+ display: none;
+ position: absolute;
+ left: 0;
+ top: 0;
+ right: 0;
+ bottom: 0;
+ background-color: rgb(0, 0, 0, .7);
+ z-index: 210;
+}
+
+.quest_modal.active {
+ display: block;
+}
+
+.quest_modal .inner_box {
+ position: absolute;
+ left: 50%;
+ top: 50%;
+ width: 702px;
+ padding: 50px 10px;
+ box-sizing: border-box;
+ background-color: #fff;
+ border: 10px solid #8793eb;
+ border-radius: 10px;
+ z-index: 10;
+ transform: translate(-50%, -50%);
+}
+
+.quest_modal .inner_box .close {
+ position: absolute;
+ right: 10px;
+ bottom: 5px;
+ color: #bf0000;
+}
+
+.quest_talk .npc_img {
+ float: left;
+ width: 12%;
+ padding-left: 20px;
+}
+
+.quest_talk p {
+ float: left;
+ width: 85%;
+ padding-left: 32px;
+ color: #222;
+ font-size: 20px;
+}
+
+.quest_talk p span {
+ color: red;
 }

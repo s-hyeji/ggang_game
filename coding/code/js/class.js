@@ -2,14 +2,8 @@ class Stage {
  constructor() {
   this.level = 0;
   this.isStart = false;
-  this.stageStart();
  }
- stageStart() {
-  setTimeout(() => {
-   this.stageGuide(`START LEVEL - ${this.level + 1}`);
-  }, 2000);
-  setTimeout(() => { this.isStart = true; this.callMonster(); }, 2500);
- };
+
  stageGuide(text) {
   this.parentNode = document.querySelector(".game_app");
   this.textBox = document.createElement("div");
@@ -21,26 +15,38 @@ class Stage {
   setTimeout(() => this.textBox.remove(), 1500);
  }
  callMonster() {
-  for (let i = 0; i <= 10; i++) {
-   if (i === 10) {
+  for (let i = 0; i <= 12; i++) {
+   if (i === 12) {
     allMonsterComProp.arr[i] = new Monster(stageInfo.monster[this.level].bossMon, hero.moveX + gameProp.screenWidth + 700 * i);
    } else {
-    allMonsterComProp.arr[i] = new Monster(stageInfo.monster[this.level].defaultMon, hero.moveX + gameProp.screenWidth + 700 * i);
+    allMonsterComProp.arr[i] = new Monster(stageInfo.monster[this.level].defaultMon, hero.moveX + gameProp.screenWidth + 900 * i);
    }
   }
  }
  clearCheck() {
-  if (allMonsterComProp.arr.length === 0 && this.isStart) {
-   this.isStart = false;
-   this.level++;
-   if (this.level < stageInfo.monster.length) {
-    this.stageStart();
-    this.stageGuide("CLEAR!!");
-   } else {
-    this.stageGuide("ALL CLEAR!!");
+  stageInfo.callPositon.forEach(arr => {
+   // console.log(arr);
+   if (hero.moveX >= arr && allMonsterComProp.arr.length === 0) {
+    this.stageGuide("곧 몬스터가 몰려옵니다!");
+    stageInfo.callPositon.shift();
+    console.log(arr);
+    setTimeout(() => {
+     this.callMonster();
+     this.level++;
+     // if (!this.level < stageInfo.monster.length) this.stageGuide("ALL CLEAR!!");
+    }, 1000);
    }
-   hero.heroUpgrade();
-  };
+  });
+  // if (allMonsterComProp.arr.length === 0 && this.isStart) {
+  //  this.isStart = false;
+  //  this.level++;
+  //  if (this.level < stageInfo.monster.length) {
+  //   this.stageStart();
+  //   this.stageGuide("CLEAR!!");
+  //  } else {
+  //   this.stageGuide("ALL CLEAR!!");
+  //  }
+  // };
  }
 }
 
@@ -48,15 +54,22 @@ class Hero {
  constructor(el) {
   this.el = document.querySelector(el);
   this.moveX = 0;
-  this.speed = 10;
+  this.speed = 8;
   this.direction = 'right'
-  this.attackDamage = 20000;
+  this.attackDamage = 10000;
   this.hpProgress = 0;
-  this.hpValue = 1000000000;
+  this.hpValue = 100000;
   this.defaultHpValue = this.hpValue;
   this.realDamage = 0;
+  this.slideSpeed = this.speed + 5;
+  this.slideTime = 0;
+  this.slideMaxTime = 30;
+  this.slideDown = false;
+  this.level = 1;
+  this.exp = 0;
+  this.maxExp = 3000;
+  this.expProgress = 0;
  }
-
  keyMotion() {
   if (key.keyDown['left']) {
    this.direction = 'left'
@@ -77,6 +90,22 @@ class Hero {
     bulletComProp.launch = true;
    }
   }
+  if (key.keyDown["slide"]) {
+   if (!this.slideDown) {
+    this.el.classList.add("slide");
+    if (this.direction === "right") {
+     this.moveX = this.moveX + this.slideSpeed;
+    } else if (this.direction === "left") {
+     this.moveX = this.moveX - this.slideSpeed;
+    }
+    if (this.slideTime > this.slideMaxTime) {
+     this.el.classList.remove("slide");
+     this.slideDown = true
+    }
+
+    this.slideTime += 1;
+   }
+  }
 
   if (!key.keyDown['left'] && !key.keyDown['right']) {
    this.el.classList.remove("run");
@@ -84,6 +113,15 @@ class Hero {
   if (!key.keyDown['attack']) {
    this.el.classList.remove("attack");
    bulletComProp.launch = false;
+  }
+  if (!key.keyDown['attack']) {
+   this.el.classList.remove("attack");
+   bulletComProp.launch = false;
+  }
+  if (!key.keyDown['slide']) {
+   this.el.classList.remove("slide");
+   this.slideDown = false;
+   this.slideTime = 0;
   }
 
   this.el.parentNode.style.transform = `translateX(${this.moveX}px)`
@@ -102,16 +140,22 @@ class Hero {
    height: this.el.offsetHeight,
   }
  }
- updateHp(monsterDamage) {
+ minusHp(monsterDamage) {
   this.hpValue = Math.max(0, this.hpValue - monsterDamage);
-  this.hpProgress = this.hpValue / this.defaultHpValue * 100;
-  const heroHpBox = document.querySelector('.state_box .hp span');
-  heroHpBox.style.width = this.hpProgress + "%";
-
   this.crash();
   if (this.hpValue === 0) {
    this.dead();
   }
+  this.renderHp();
+ }
+ plusHp(hp) {
+  this.hpValue = hp;
+  this.renderHp();
+ }
+ renderHp() {
+  this.hpProgress = this.hpValue / this.defaultHpValue * 100;
+  const heroHpBox = document.querySelector('.state_box .hp span');
+  heroHpBox.style.width = this.hpProgress + "%";
  }
  crash() {
   this.el.classList.add("crash");
@@ -124,10 +168,82 @@ class Hero {
  hitDamage() {
   this.realDamage = this.attackDamage - Math.round(Math.random() * this.attackDamage * 0.1)
  }
- heroUpgrade() {
-  this.speed += 1.3
-  this.attackDamage += 15000;
+ heroUpgrade(upDamage) {
+  let damage = upDamage ?? 5000;
+  this.attackDamage += damage;
  }
+ updateExp(exp) {
+  this.exp += exp;
+  this.expProgress = this.exp / this.maxExp * 100;
+  const heroExpBox = document.querySelector('.state_box .exp span');
+  heroExpBox.style.width = this.expProgress + "%";
+
+  if (this.exp >= this.maxExp) {
+   this.levelUp();
+  }
+ }
+ levelUp() {
+  this.level++;
+  this.exp = 0;
+  this.maxExp = this.maxExp + this.level * 1000;
+
+  document.querySelector(".level_box strong").innerHTML = this.level;
+  const levelGuide = document.querySelector(".hero_box .level_up");
+
+  levelGuide.classList.add("active");
+  setTimeout(() => { levelGuide.classList.remove("active") }, 1000);
+  this.updateExp(this.exp);
+  this.heroUpgrade();
+  this.plusHp(this.defaultHpValue);
+ }
+}
+
+class Npc {
+ constructor(property) {
+  this.property = property;
+  this.parentNode = document.querySelector(".game");
+  this.el = document.createElement('div');
+  this.el.className = "npc_box";
+  this.npcCrash = false;
+  this.talkOn = false;
+  this.modal = document.querySelector(".quest_modal");
+  this.qusetStat = false;
+  this.qusetEnd = false;
+
+  this.init();
+ }
+ init() {
+  let npcTalk = `<div class="talk_box"><p> ${this.property.idleMessage}<br> <span>대화 Enter</span></p></div><div class="npc"></div>`;
+  this.el.innerHTML = npcTalk;
+  this.el.style.left = this.property.positionX + "px";
+  this.parentNode.appendChild(this.el);
+ }
+ position() {
+  return {
+   left: this.el.getBoundingClientRect().left,
+   right: this.el.getBoundingClientRect().right,
+   top: gameProp.screenHeight - this.el.getBoundingClientRect().top,
+   bottom: gameProp.screenHeight - this.el.getBoundingClientRect().height - this.el.getBoundingClientRect().top,
+  }
+ }
+ crash() {
+  if (hero.position().right > this.position().left && hero.position().left < this.position().right) {
+   this.npcCrash = true;
+  } else {
+   this.npcCrash = false;
+  }
+ }
+ talk() {
+  if (!this.talkOn && this.npcCrash) {
+   this.talkOn = true;
+   this.property.quest();
+   this.modal.classList.add("active");
+  } else if (this.talkOn) {
+   this.talkOn = false;
+   this.modal.classList.remove("active");
+  }
+ }
+
 }
 
 class Bullet {
@@ -225,6 +341,7 @@ class Monster {
   this.speed = property.speed;
   this.crashDamage = property.crashDamage;
   this.score = property.score;
+  this.exp = property.exp;
 
   this.init();
  }
@@ -259,6 +376,7 @@ class Monster {
   setTimeout(() => this.el.remove(), 200);
   allMonsterComProp.arr.splice(index, 1)
   this.setScore();
+  this.setExp();
  }
  moveMonster() {
   if (this.moveX + this.positionX + this.el.offsetWidth + hero.position().left - hero.moveX <= 0) {
@@ -275,11 +393,14 @@ class Monster {
   let leftDiff = 90;
 
   if (hero.position().right - rightDiff >= this.position().left && hero.position().left + leftDiff < this.position().right) {
-   hero.updateHp(this.crashDamage);
+   hero.minusHp(this.crashDamage);
   }
  }
  setScore() {
   stageInfo.totalScore += this.score;
   document.querySelector('.score_box').innerHTML = stageInfo.totalScore;
+ }
+ setExp() {
+  hero.updateExp(this.exp);
  }
 }
